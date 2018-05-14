@@ -1,8 +1,4 @@
 # movie
 
-A new Flutter project.
+A Flutter project By MVP.
 
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
