@@ -7,6 +7,8 @@ import '../utils/string_util.dart';
 import '../application.dart';
 import '../presenter/movie_grid_presenter.dart';
 import '../bean/tab_item.dart';
+import '../routers.dart';
+import '../utils/log_print.dart';
 
 class MovieGridPage extends StatefulWidget {
   final MovieTabItem tabItem;
@@ -73,7 +75,7 @@ class _MovieGridPageState extends State<MovieGridPage>
         String url = StringUtil.encodeUrl(_movie.url);
         String picture = StringUtil.encodeUrl(_movie.picture);
         Application.router
-            .navigateTo(context, '/detail/$url/${_movie.name}/$picture');
+            .navigateTo(context, '${Routers.DETAIL}/$url/${_movie.name}/$picture');
       },
       child: new Card(
         child: new Column(
@@ -97,27 +99,27 @@ class _MovieGridPageState extends State<MovieGridPage>
 
   @override
   void loadComplete(List<Movie> _data) {
-    if (_isRefreshing) {
-      _isRefreshing = false;
-      _page = 1;
-    }
-    if (_isLoadMoreing) {
-      _isLoadMoreing = false;
-      _page++;
-    }
     setState(() {
+      if (_isRefreshing) {
+        _isRefreshing = false;
+      }
+      if (_isLoadMoreing) {
+        _isLoadMoreing = false;
+      }
       _page == 1 ? _movies = _data : _movies.addAll(_data);
     });
   }
 
   @override
   Future loadMoreMovies() {
+    _page++;
     _isLoadMoreing = true;
     return _presenter.loadMoreMovies();
   }
 
   @override
   Future refreshMovies() {
+    _page = 1;
     _isRefreshing = true;
     return _presenter.refreshMovies();
   }
@@ -127,9 +129,10 @@ class _MovieGridPageState extends State<MovieGridPage>
     String url = widget.tabItem.url;
     List<String> paths = url.split("/");
     String pagePath = paths[paths.length - 1];
+    String type = pagePath.split(".")[0];
     List<String> pagePaths = pagePath.split(".");
     String pageTag = pagePaths[pagePaths.length - 1];
-    String path = '$_page.$pageTag';
+    String path = '$type/$_page.$pageTag';
     url = url.replaceAll(pagePath, path);
     return url;
   }

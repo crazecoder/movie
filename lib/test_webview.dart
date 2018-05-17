@@ -8,7 +8,7 @@ const kAndroidUserAgent =
     "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36";
 
 String selectedUrl =
-    "https://apis.tianxianle.com/guhuo/a3.php?sign=ff00bdc1ffa410f85f5d2bd7d2c336c2&t=1526285667&id=rGmUZmJnmW9maZVpw5ufypWSpaygyp2XqWJwmNOblJsO0O0O";
+    "http://www.7nmg.com/play/42732/1/1.html";
 
 void main() {
   runApp(new MyApp());

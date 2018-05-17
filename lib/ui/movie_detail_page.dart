@@ -4,6 +4,8 @@ import '../bean/video.dart';
 import '../bean/movie_detail.dart';
 import '../presenter/movie_detail_presenter.dart';
 import '../utils/string_util.dart';
+import '../application.dart';
+import '../routers.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final String title;
@@ -61,7 +63,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (_, i) {
                       return new RaisedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Application.router.navigateTo(context, "${Routers.PLAY}/${StringUtil.encodeUrl(_items[i]?.url)}/${widget.title}");
+                        },
                         child: new Container(
                           child: new Text(_items[i]?.name),
                         ),

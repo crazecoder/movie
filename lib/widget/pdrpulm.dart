@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 final kDragOffset = 40.0;
 
@@ -88,16 +89,29 @@ class _ScrollIndicatorState extends State<ScrollIndicator> {
   }
 
   Widget build(BuildContext context) {
-    if (_mode == _PullIndicatorMode.armed && _dragOffset > 0.0) {
-      // TODO: Show Refresh Indicator
-    }
 
-    if (_mode == _PullIndicatorMode.armed && _dragOffset < 0.0) {
-      // TODO: Show LoadMore Indicator
-    }
     return new NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
-      child: widget.child,
+      child: _buildChild(),
     );
+  }
+  Widget _buildChild(){
+//    if (_mode == _PullIndicatorMode.armed && _dragOffset > 0.0) {
+//      // TODO: Show Refresh Indicator
+//      return new Column(children: <Widget>[
+//        new CircularProgressIndicator(),
+//        widget.child,
+//      ],);
+//    }
+//
+//    if (_mode == _PullIndicatorMode.armed && _dragOffset < 0.0) {
+//      // TODO: Show LoadMore Indicator
+//      return new Column(children: <Widget>[
+//        widget.child,
+//        new CircularProgressIndicator()
+//      ],);
+//    }
+    return widget.child;
+
   }
 }

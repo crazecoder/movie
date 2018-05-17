@@ -1,142 +1,157 @@
-import 'package:chewie/chewie.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_launcher/video_launcher.dart';
 
 void main() {
-  runApp(
-    new ChewieDemo(),
-  );
+  runApp(new MyApp());
 }
 
-class ChewieDemo extends StatefulWidget {
-  final String title;
+typedef void OnError(Exception exception);
 
-  ChewieDemo({this.title = 'Chewie Demo'});
+const videoUrl = "http://v6-dy.ixigua.com/video/m/220b4cd905b7d134703bff168e2ee1d34591156a053000051d8bdc64a6f/?Expires=1526357313&AWSAccessKeyId=qh0h9TdcEMoS2oPj7aKX&Signature=9mmTqfiGTjXp1Ozff0A74yovi98%3D";
 
+/// a video launcher, based on url_launcher
+/// can read remote and local files
+class MyApp extends StatelessWidget {
   @override
-  State<StatefulWidget> createState() {
-    return new _ChewieDemoState();
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Video Launcher',
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: new MyHomePage(title: 'Video Launcher'),
+    );
   }
 }
 
-class _ChewieDemoState extends State<ChewieDemo> {
-  TargetPlatform _platform;
-  VideoPlayerController _controller;
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  _MyHomePageState createState() => new _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  Future<Null> _launched;
+  String localVideoPath;
+  String localAssetPath;
+
+  _buildButton(String label, VoidCallback onPressed) => new Padding(
+      padding: new EdgeInsets.all(12.0),
+      child: new RaisedButton(
+        onPressed: onPressed,
+        child: new Text(label),
+      ));
 
   @override
   void initState() {
     super.initState();
-    _controller = new VideoPlayerController.network(
-//      'https://flutter.github.io/assets-for-api-docs/videos/butterfly.mp4',
-    'http://v6-dy.ixigua.com/video/m/220291b34d19e8743438e21e3d34fb4ac97115701da000065db35263c7d/?Expires=1526298536&AWSAccessKeyId=qh0h9TdcEMoS2oPj7aKX&Signature=hon%2Bsefx0v%2F9xQDGIofbHoNvW%2F0%3D'
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: widget.title,
-      theme: new ThemeData.light().copyWith(
-        platform: _platform ?? Theme.of(context).platform,
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(widget.title),
       ),
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text(widget.title),
-        ),
-        body: new Column(
+      body: new Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Expanded(
-              child: new Center(
-                child: new Chewie(
-                  _controller,
-                  aspectRatio: 3 / 2,
-                  autoPlay: true,
-                  looping: true,
-
-                  // Try playing around with some of these other options:
-
-                  // showControls: false,
-                  // materialProgressColors: new ChewieProgressColors(
-                  //   playedColor: Colors.red,
-                  //   handleColor: Colors.blue,
-                  //   backgroundColor: Colors.grey,
-                  //   bufferedColor: Colors.lightGreen,
-                  // ),
-                  // placeholder: new Container(
-                  //   color: Colors.grey,
-                  // ),
-                  // autoInitialize: true,
+            new Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                new Padding(
+                  padding: new EdgeInsets.all(16.0),
+                  child: new Text(videoUrl),
                 ),
-              ),
-            ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        _controller = new VideoPlayerController.network(
-                          'http://v6-dy.ixigua.com/video/m/220291b34d19e8743438e21e3d34fb4ac97115701da000065db35263c7d/?Expires=1526298536&AWSAccessKeyId=qh0h9TdcEMoS2oPj7aKX&Signature=hon%2Bsefx0v%2F9xQDGIofbHoNvW%2F0%3D',
-                        );
-                      });
-                    },
-                    child: new Padding(
-                      child: new Text("Video 1"),
-                      padding: new EdgeInsets.symmetric(vertical: 16.0),
-                    ),
-                  ),
-                ),
-                new Expanded(
-                  child: new FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        _controller = new VideoPlayerController.network(
-                          'http://v6-dy.ixigua.com/video/m/220291b34d19e8743438e21e3d34fb4ac97115701da000065db35263c7d/?Expires=1526298536&AWSAccessKeyId=qh0h9TdcEMoS2oPj7aKX&Signature=hon%2Bsefx0v%2F9xQDGIofbHoNvW%2F0%3D',
-                        );
-                      });
-                    },
-                    child: new Padding(
-                      padding: new EdgeInsets.symmetric(vertical: 16.0),
-                      child: new Text("Video 2"),
-                    ),
-                  ),
-                )
+                _buildButton('Play online', _launch),
+                _buildButton(
+                    'Download', localVideoPath != null ? null : _loadVideo),
+                _buildButton(
+                    'Play local', localVideoPath != null ? _launchLocal : null),
+                _buildButton('Play video asset', _loadOrLaunchLocalAsset),
               ],
             ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        _platform = TargetPlatform.android;
-                      });
-                    },
-                    child: new Padding(
-                      child: new Text("Android controls"),
-                      padding: new EdgeInsets.symmetric(vertical: 16.0),
-                    ),
-                  ),
-                ),
-                new Expanded(
-                  child: new FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        _platform = TargetPlatform.iOS;
-                      });
-                    },
-                    child: new Padding(
-                      padding: new EdgeInsets.symmetric(vertical: 16.0),
-                      child: new Text("iOS controls"),
-                    ),
-                  ),
-                )
-              ],
-            )
+            new FutureBuilder<Null>(future: _launched, builder: _launchStatus),
           ],
         ),
       ),
     );
+  }
+
+  void _launch() => setState(() => _launched = _launchVideo(videoUrl));
+
+  void _launchLocal() =>
+      setState(() => _launched = _launchVideo(localVideoPath, isLocal: true));
+
+  void _loadOrLaunchLocalAsset() =>
+      localAssetPath != null ? _launchLocalAsset() : copyLocalAsset();
+
+  Future copyLocalAsset() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = new File("${dir.path}/video_asset.mp4");
+    final videoData = await rootBundle.load("assets/video.mp4");
+    final bytes = videoData.buffer.asUint8List();
+    await file.writeAsBytes(bytes, flush: true);
+    setState(() {
+      localAssetPath = file.path;
+      _launchLocalAsset();
+    });
+  }
+
+  void _launchLocalAsset() =>
+      _launched = _launchVideo(localAssetPath, isLocal: true);
+
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
+    String info;
+    if (snapshot.hasError) {
+      return new Text('Error: ${snapshot.error}');
+    } else {
+      info = localVideoPath != null ? localVideoPath : '';
+    }
+    return new Padding(
+        padding: new EdgeInsets.only(top: 20.0), child: new Text(info));
+  }
+
+  Future<Null> _launchVideo(String url, {bool isLocal: false}) async {
+    if (await canLaunchVideo(url, isLocal: isLocal)) {
+      await launchVideo(url, isLocal: isLocal);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future _loadVideo() async {
+    final bytes = await _loadFileBytes(videoUrl,
+        onError: (Exception exception) =>
+            print('_MyHomePageState._loadVideo => exception ${exception}'));
+
+    final dir = await getApplicationDocumentsDirectory();
+    final file = new File('${dir.path}/video.mp4');
+
+    await file.writeAsBytes(bytes);
+    if (await file.exists())
+      setState(() {
+        localVideoPath = file.path;
+      });
+  }
+
+  Future<Uint8List> _loadFileBytes(String url, {OnError onError}) async {
+    Uint8List bytes;
+    try {
+      bytes = await readBytes(url);
+    } on ClientException {
+      rethrow;
+    }
+    return bytes;
   }
 }
