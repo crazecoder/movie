@@ -30,7 +30,7 @@ class _NewDetailPageState extends State<NewDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    if (_movies.length>1) {
+    if (_movies.length > 1) {
       return new GridView.builder(
         itemCount: _movies?.length,
         gridDelegate:
@@ -50,9 +50,10 @@ class _NewDetailPageState extends State<NewDetailPage>
   Widget _buildGridItem(Movie _movie) {
     return new GestureDetector(
       onTap: () {
-        String url =StringUtil.encodeUrl(_movie.url);
+        String url = StringUtil.encodeUrl(_movie.url);
         String picture = StringUtil.encodeUrl(_movie.picture);
-        Application.router.navigateTo(context, '/detail/$url/${_movie.name}/$picture');
+        Application.router
+            .navigateTo(context, '/detail/$url/${_movie.name}/$picture');
       },
       child: new Card(
         child: new Column(
@@ -77,7 +78,7 @@ class _NewDetailPageState extends State<NewDetailPage>
   @override
   void refreshGrid(List<Movie> _moviesData) {
     setState(() {
-      _movies = _moviesData;
+      if (mounted) _movies = _moviesData;
     });
   }
 }

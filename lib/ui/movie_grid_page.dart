@@ -19,7 +19,7 @@ class MovieGridPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _MovieGridPageState();
 }
 
-class _MovieGridPageState extends State<MovieGridPage>
+class _MovieGridPageState extends State<MovieGridPage> with AutomaticKeepAliveClientMixin
     implements MovieGridPageStateIml {
   List<Movie> _movies = <Movie>[];
   MovieGridPresenter _presenter;
@@ -100,13 +100,15 @@ class _MovieGridPageState extends State<MovieGridPage>
   @override
   void loadComplete(List<Movie> _data) {
     setState(() {
-      if (_isRefreshing) {
-        _isRefreshing = false;
+      if(mounted){
+        if (_isRefreshing) {
+          _isRefreshing = false;
+        }
+        if (_isLoadMoreing) {
+          _isLoadMoreing = false;
+        }
+        _page == 1 ? _movies = _data : _movies.addAll(_data);
       }
-      if (_isLoadMoreing) {
-        _isLoadMoreing = false;
-      }
-      _page == 1 ? _movies = _data : _movies.addAll(_data);
     });
   }
 
@@ -134,8 +136,13 @@ class _MovieGridPageState extends State<MovieGridPage>
     String pageTag = pagePaths[pagePaths.length - 1];
     String path = '$type/$_page.$pageTag';
     url = url.replaceAll(pagePath, path);
+    log(url);
     return url;
   }
+
+  // TODO: implement wantKeepAlive
+  @override
+  bool get wantKeepAlive => true;
 }
 
 abstract class MovieGridPageStateIml {

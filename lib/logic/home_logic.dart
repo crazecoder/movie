@@ -17,7 +17,7 @@ class HomeLogic implements HomeLogicIml {
       const MovieTabItem(Icons.camera_roll, "综艺","/type/4.html"),
       const MovieTabItem(Icons.music_note, "音乐","/type/6.html"),
       const MovieTabItem(Icons.child_care, "动漫","/type/7.html"),
-      const MovieTabItem(Icons.queue_music, "舞曲","/type/11.html"),
+//      const MovieTabItem(Icons.queue_music, "舞曲","/type/11.html"),
     ];
   }
 }
