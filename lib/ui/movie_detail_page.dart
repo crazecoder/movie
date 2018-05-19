@@ -41,7 +41,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
           centerTitle: true,
         ),
         body: new Center(
-          child: new CircularProgressIndicator(),
+          child:  new Image.asset("images/load.gif"),
         ),
       );
     } else

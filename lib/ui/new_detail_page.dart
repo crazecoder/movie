@@ -42,7 +42,7 @@ class _NewDetailPageState extends State<NewDetailPage>
       );
     } else {
       return new Center(
-        child: new CircularProgressIndicator(),
+        child:  new Image.asset("images/load.gif"),
       );
     }
   }
@@ -61,7 +61,7 @@ class _NewDetailPageState extends State<NewDetailPage>
             new Expanded(
               child: new CachedNetworkImage(
                 imageUrl: _movie.picture,
-                placeholder: new CircularProgressIndicator(),
+                placeholder:  new Image.asset("images/load.gif"),
                 errorWidget: new Icon(Icons.error),
               ),
             ),

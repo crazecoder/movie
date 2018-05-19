@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../utils/string_util.dart';
-import '../config.dart';
 import '../utils/log_print.dart';
 import '../presenter/play_presenter.dart';
-import 'package:video_launcher/video_launcher.dart';
+import '../video_laucher.dart';
 import 'dart:async';
 
 class PlayPage extends StatefulWidget {
@@ -28,7 +27,7 @@ class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
         centerTitle: true,
       ),
       body: new Center(
-        child: new CircularProgressIndicator(),
+        child: new Image.asset("images/load.gif"),
       ),
     );
   }
@@ -43,6 +42,7 @@ class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
   @override
   void dispose() {
     super.dispose();
+    _presenter?.clear();
   }
 
   @override
@@ -59,17 +59,20 @@ class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
 
   Future<Null> _launch(String url) async {
     if (await canLaunchVideo(url)) {
-      launchVideo(url).then((_) {
-        Navigator.pop(context);
-      });
+      await launchVideo(url);
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  @override
+  void close() {
+    Navigator.pop(context);
   }
 }
 
 abstract class PlayPageStateIml {
   void play(String _url);
-
+  void close();
   String getPath();
 }

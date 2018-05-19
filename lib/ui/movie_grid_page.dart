@@ -9,6 +9,7 @@ import '../presenter/movie_grid_presenter.dart';
 import '../bean/tab_item.dart';
 import '../routers.dart';
 import '../utils/log_print.dart';
+import 'package:flutter/cupertino.dart';
 
 class MovieGridPage extends StatefulWidget {
   final MovieTabItem tabItem;
@@ -63,7 +64,7 @@ class _MovieGridPageState extends State<MovieGridPage> with AutomaticKeepAliveCl
           centerTitle: true,
         ),
         body: new Center(
-          child: new CircularProgressIndicator(),
+          child:  new Image.asset("images/load.gif"),
         ),
       );
     }
@@ -83,7 +84,7 @@ class _MovieGridPageState extends State<MovieGridPage> with AutomaticKeepAliveCl
             new Expanded(
               child: new CachedNetworkImage(
                 imageUrl: _movie.picture,
-                placeholder: new CircularProgressIndicator(),
+                placeholder: new Image.asset("images/load.gif"),
                 errorWidget: new Icon(Icons.error),
               ),
             ),

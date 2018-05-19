@@ -19,11 +19,14 @@ class _SplashPageState extends State<SplashPage> implements SplashPageIml {
   Widget build(BuildContext context) {
     return new SizedBox.expand(
       child: new DecoratedBox(
-          decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[Colors.blueGrey, Colors.white70],
+        child: new Image.asset("images/splash.gif"),
+        decoration: BoxDecoration(
+          color:  Colors.white,
+//          gradient: LinearGradient(
+//            colors: <Color>[Colors.blueGrey, Colors.white70],
+//          ),
         ),
-      )),
+      ),
     );
   }
 
