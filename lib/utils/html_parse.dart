@@ -34,6 +34,7 @@ List<Category> parseNewHomeTab(String newHtml) {
   });
   return _categorys;
 }
+
 Category parseMovieGrid(String newHtml) {
   var doc = parse(newHtml);
   Element container =
@@ -61,6 +62,7 @@ List<Movie> parseNewDetail(Element element) {
   });
   return _movies;
 }
+
 MovieDetail parseMovieDetail(String _html) {
   var _movies = <Movie>[];
   var doc = parse(_html);
@@ -74,9 +76,45 @@ MovieDetail parseMovieDetail(String _html) {
   as.forEach((a) {
     var _name = a.innerHtml;
     var _url = a.attributes["href"];
-    Movie _movie = new Movie(name: _name,url: _url);
+    Movie _movie = new Movie(name: _name, url: _url);
     _movies.add(_movie);
   });
-  var _movieDetail = new MovieDetail(intro: intro,movies: _movies);
+  var _movieDetail = new MovieDetail(intro: intro, movies: _movies);
   return _movieDetail;
+}
+
+String parseJS(String _html) {
+  var doc = parse(_html);
+  Element script =
+      doc?.documentElement?.getElementsByTagName("script")?.elementAt(4);
+  String jsUrl = script?.attributes?.values?.last;
+  log(jsUrl);
+  return jsUrl;
+}
+
+String parseUrlFromJS(String _html) {
+  String s = _html.split('src="').last;
+  String url = s.split('" width=').first;
+  log(url);
+  return url;
+}
+
+String parsePlayUrl(String _html) {
+  var doc = parse(_html);
+  Element iframe = doc?.documentElement?.getElementsByTagName("iframe")?.first;
+  String url = iframe?.attributes?.values?.elementAt(7);
+  log(url);
+  return url;
+}
+
+String parsePlayUrlFromHtml(String _html) {
+//  var doc = parse(_html);
+//  Element wrap =
+//      doc?.documentElement?.getElementsByClassName("dplayer-video-wrap")?.first;
+//  Element video = wrap.getElementsByTagName("video")?.first;
+//  String url = video?.attributes?.values?.elementAt(4);
+  String s = _html.split('vid="').last;
+  String url = s.split('";').first;
+  log(url);
+  return url;
 }

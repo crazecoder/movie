@@ -40,6 +40,25 @@ class MovieHttpClient {
     log(body);
     return body;
   }
+  Future<String> getHtmlFromJS(String _jsUrl) async {
+    log('$_jsUrl');
+    var client = new IOClient();
+    Request request = new Request("GET", Uri.parse(_jsUrl));
+//    request.encoding=Encoding.getByName("utf-8");
+//    request.headers['Accept'] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
+//    request.headers['Accept-Encoding'] = 'gzip, deflate';
+//    request.headers['Accept-Language'] = 'zh-CN,zh;q=0.9';
+//    request.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36';
+//    log(request.headers);
+    StreamedResponse streamedResponse =
+    await client.send(request);
+//    Response response =  await Response.fromStream(streamedResponse);
+//    log(response.headers);
+
+    String body = await Utf8Codec(allowMalformed:true).decodeStream(streamedResponse.stream);
+    log(body);
+    return body;
+  }
 //  Future<String> getHtml({String path = ""}) async {
 //    if (path.isNotEmpty) {
 //      path = path.substring(1);

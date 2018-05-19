@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
 import '../utils/string_util.dart';
 import '../config.dart';
 import '../utils/log_print.dart';
-import '../http/movie_http.dart';
-
+import '../presenter/play_presenter.dart';
+import 'package:video_launcher/video_launcher.dart';
+import 'dart:async';
 
 class PlayPage extends StatefulWidget {
   final String url;
@@ -17,47 +18,58 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
-  WebviewScaffold _webview;
-  GlobalKey _webviewKey = new GlobalKey();
-  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  PlayPresenter _presenter;
+
   @override
   Widget build(BuildContext context) {
-    _webview = new WebviewScaffold(
-      key: _webviewKey,
-      withZoom: true,
-      withLocalStorage: true,
-      withJavascript: true,
-      url: _parseUrl(),
+    return new Scaffold(
       appBar: AppBar(
         title: new Text(widget.title),
         centerTitle: true,
       ),
+      body: new Center(
+        child: new CircularProgressIndicator(),
+      ),
     );
-    return _webview;
   }
 
   @override
   void initState() {
     super.initState();
-//    MovieHttpClient().getHtml(path: StringUtil.decodeUrl(widget.url));
+    _presenter = new PlayPresenter(this);
+    _presenter.start();
   }
+
   @override
   void dispose() {
     super.dispose();
-    _webviewKey?.currentState?.dispose();
-
   }
-  @override
-  void play() {}
 
-  String _parseUrl() {
+  @override
+  void play(String _url) {
+    _launch(_url);
+  }
+
+  @override
+  String getPath() {
     String path = StringUtil.decodeUrl(widget.url);
-    String url = Config.URL + path;
-    log(url);
-    return url;
+    log(path);
+    return path;
+  }
+
+  Future<Null> _launch(String url) async {
+    if (await canLaunchVideo(url)) {
+      launchVideo(url).then((_) {
+        Navigator.pop(context);
+      });
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
 
 abstract class PlayPageStateIml {
-  void play();
+  void play(String _url);
+
+  String getPath();
 }
