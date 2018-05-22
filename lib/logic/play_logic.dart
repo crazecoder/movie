@@ -3,21 +3,52 @@ import '../utils/my_isolate.dart';
 import '../utils/html_parse.dart';
 
 abstract class PlayLogicIml {
-  void getPlay(Function fn, String _path);
+  void getPlay(Function fn,Function fn1, String _path);
+  void computeClose();
 }
 
 class PlayLogic implements PlayLogicIml {
   @override
-  void getPlay(Function fn, String _path) {
-    MovieHttpClient().getHtml(path: _path).then((_html) {
-      compute(parseJS, _html).then((_url) {
-        MovieHttpClient().getHtmlFromJS(_url).then((_html) {
-          compute(parseUrlFromJS, _html).then((_url) {
-            MovieHttpClient().getHtmlFromJS(_url).then((_html) {
-              compute(parsePlayUrl, _html).then((_url) {
-                MovieHttpClient().getHtmlFromJS(_url).then((_html) {
-                  compute(parsePlayUrlFromHtml, _html).then((_playUrl) {
-                    fn(_playUrl);
+  void getPlay(Function fn,Function fn1, String _path) {
+      MovieHttpClient().getHtml(path: _path).then((_html) {
+        compute(parseJS, _html).then((_url) {
+          MovieHttpClient().getHtmlFromJS(_url).then((_html) {
+            if(_html.contains("盗链")){
+              fn1();
+              return;
+            }else if(_html.contains("var flashvars={f:'")){
+              compute(parseOtherPlayUrl, _html).then((_playUrl) {
+                fn(_playUrl,true);
+                return;
+              });
+            }
+            compute(parseUrlFromJS, _html).then((_url) {
+              MovieHttpClient().getHtmlFromJS(_url).then((_html) {
+                if(_html.contains("盗链")){
+                  fn1();
+                  return;
+                }else if(_html.contains("var flashvars={f:'")){
+                  compute(parseOtherPlayUrl, _html).then((_playUrl) {
+                    fn(_playUrl,true);
+                    return;
+                  });
+                }
+                compute(parsePlayUrl, _html).then((_url) {
+                  MovieHttpClient().getHtmlFromJS(_url).then((_html) {
+                    if(_html.contains("解析")){
+                      fn(_url,false);
+                      return;
+                    }else if(_html.contains("var flashvars={f:'")){
+                      compute(parseOtherPlayUrl, _html).then((_playUrl) {
+                        fn(_playUrl,true);
+                        return;
+                      });
+                    }else{
+                      compute(parsePlayUrlFromHtml, _html).then((_playUrl) {
+                        fn(_playUrl,true);
+                      });
+                    }
+
                   });
                 });
               });
@@ -25,6 +56,11 @@ class PlayLogic implements PlayLogicIml {
           });
         });
       });
-    });
   }
+
+  @override
+  void computeClose() {
+    close();
+  }
+
 }

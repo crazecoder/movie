@@ -23,7 +23,6 @@ class MyClient extends IOClient {
 
     if (headers != null) {
       request.headers.addAll(headers);
-      print("${request.headers}");
     }
 //    request.encoding = Encoding.getByName("utf-8");
     if (body != null) {
@@ -36,7 +35,6 @@ class MyClient extends IOClient {
       } else {
         throw new ArgumentError('Invalid request body "$body".');
       }
-      print("${request.body}");
     }
 
     return Response.fromStream(await send(request));

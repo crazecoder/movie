@@ -107,6 +107,12 @@ String parsePlayUrl(String _html) {
   return url;
 }
 
+String parseOtherPlayUrl(String _html) {
+  String html = _html.split("var flashvars={f:'").last;
+  String url = html.split("',c:0,loaded").first;
+  return url;
+}
+
 String parsePlayUrlFromHtml(String _html) {
 //  var doc = parse(_html);
 //  Element wrap =

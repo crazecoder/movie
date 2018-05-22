@@ -5,6 +5,8 @@ import '../utils/log_print.dart';
 import '../presenter/play_presenter.dart';
 import '../video_laucher.dart';
 import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
+import '../application.dart';
 
 class PlayPage extends StatefulWidget {
   final String url;
@@ -61,7 +63,8 @@ class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
     if (await canLaunchVideo(url)) {
       await launchVideo(url);
     } else {
-      throw 'Could not launch $url';
+      showErrorText();
+      close();
     }
   }
 
@@ -69,10 +72,44 @@ class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
   void close() {
     Navigator.pop(context);
   }
+
+  @override
+  void loadWebView(String _url) {
+    _launchURL(_url);
+  }
+
+  _launchURL(String _url) async {
+    if (await canLaunch(_url)) {
+      await launch(_url);
+    } else {
+      showErrorText();
+      close();
+    }
+  }
+
+  @override
+  void showErrorText() {
+    Application.key?.currentState?.showSnackBar(new SnackBar(
+        content: new Row(
+      children: <Widget>[
+        new Container(
+          child: new Icon(Icons.error_outline),
+          margin: new EdgeInsets.all(5.0),
+        ),
+        new Text("解析失败"),
+      ],
+    )));
+  }
 }
 
 abstract class PlayPageStateIml {
   void play(String _url);
+
+  void loadWebView(String _url);
+
   void close();
+
+  void showErrorText();
+
   String getPath();
 }

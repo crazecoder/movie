@@ -23,6 +23,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
   String _intro = "";
   var _items = <Movie>[];
   MovieDetailPresenter _presenter;
+  GlobalKey<ScaffoldState> _key = new GlobalKey();
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
       );
     } else
       return new Scaffold(
+        key: _key,
         appBar: AppBar(
           title: new Text(widget.title),
           centerTitle: true,
@@ -64,7 +66,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                     itemBuilder: (_, i) {
                       return new RaisedButton(
                         onPressed: () {
-                          Application.router.navigateTo(context, "${Routers.PLAY}/${StringUtil.encodeUrl(_items[i]?.url)}/${widget.title}");
+                          Application.router.navigateTo(context,
+                              "${Routers.PLAY}/${StringUtil.encodeUrl(_items[i]?.url)}/${widget.title}");
                         },
                         child: new Container(
                           child: new Text(_items[i]?.name),
@@ -83,6 +86,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
     setState(() {
       _intro = _movieDetail.intro;
       _items = _movieDetail.movies;
+      Application.key = _key;
     });
   }
 }
