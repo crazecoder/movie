@@ -20,8 +20,8 @@ class PlayPresenter implements PlayPresenterIml {
   @override
   void start() {
     _logic.getPlay((_url, _isVideo) {
-      _timer = new Timer(new Duration(seconds: 1), _view.close);
       if (_isVideo) {
+        _timer = new Timer(new Duration(seconds: 1), _view.close);
         _view.play(_url);
       } else {
         _view.loadWebView(_url);
