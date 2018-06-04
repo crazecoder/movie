@@ -71,6 +71,7 @@ class _PlayPageState extends State<PlayPage> implements PlayPageStateIml {
   void dispose() {
     super.dispose();
     _presenter?.clear();
+    _onDestroy.cancel();
     flutterWebviewPlugin.close();
   }
 
